@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Beat Battle Party</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #3F4542;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .header {
+            width: 100%;
+            padding: 15px 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .logo {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+        }
+        
+        .logo img {
+            height: 200px;
+            width: 200px;
+        }
+        
+        .title {
+            font-family: 'Bungee', cursive;
+            font-size: 64px;
+            font-weight: 400;
+            text-transform: uppercase;
+            color: white;
+            text-align: center;
+        }
+        
+        .container {
+            background-color: #3F4542;
+            border: 2px solid #6A7670;
+            border-radius: 30px;
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            min-height: 420px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .form-group label {
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            width: 140px;
+            margin-right: 15px;
+        }
+        
+        .player-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .player-box {
+            background-color: #6A7670;
+            border-radius: 30px;
+            padding: 18px 22px;
+            font-size: 20px;
+            color: white;
+            width: 48%;
+            text-align: center;
+        }
+        
+        .genre-select {
+            background-color: #6A7670;
+            border: none;
+            border-radius: 30px;
+            padding: 18px 22px;
+            font-size: 20px;
+            color: white;
+            flex-grow: 1;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+        
+        .genre-select option {
+            background-color: #6A7670;
+            color: white;
+        }
+        
+        .start-button {
+            background-color: #6A7670;
+            border: none;
+            border-radius: 30px;
+            padding: 18px 50px;
+            font-size: 26px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        .start-button:hover {
+            background-color: #7c8585;
+        }
+        
+        .waiting-message {
+            color: white;
+            font-size: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px;
+                margin-top: 75px;
+            }
+            
+            .logo {
+                top: 0px;
+                left: 5px;
+            }
+            
+            .logo img {
+                height: 100px;
+                width: 100px;
+            }
+            
+            .title {
+                font-size: 38px;
+            }
+            
+            .container {
+                padding: 20px;
+                margin-top: 10px;
+                min-height: auto;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .form-group label {
+                margin-bottom: 10px;
+                font-size: 22px;
+            }
+            
+            .player-status {
+                flex-direction: column;
+            }
+            
+            .player-box {
+                width: 100%;
+                margin-bottom: 10px;
+                font-size: 18px;
+            }
+            
+            .genre-select {
+                font-size: 18px;
+            }
+            
+            .start-button {
+                font-size: 22px;
+                padding: 15px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="Beat.png" alt="Beat Battle Logo">
+        </div>
+        <h1 class="title">BEAT BATTLE</h1>
+    </div>
+    
+    <div class="container">
+        <div class="form-group">
+            <label for="players">Players:</label>
+            <div class="player-status">
+                <div class="player-box" id="player1Box">
+                    Waiting for Player 1...
+                </div>
+                <div class="player-box" id="player2Box">
+                    Waiting for Player 2...
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="genre">Genre:</label>
+            <select class="genre-select" id="genre">
+                <option value="" disabled selected>Select music genre</option>
+                <option value="Hip Hop">Hip Hop</option>
+                <option value="EDM">EDM</option>
+                <option value="Jazz">Jazz</option>
+                <option value="R&B">R&B</option>
+                <option value="Rock">Rock</option>
+                <option value="Pop">Pop</option>
+                <option value="Trap">Trap</option>
+                <option value="Lofi">Lofi</option>
+                <option value="Dubstep">Dubstep</option>
+                <option value="House">House</option>
+            </select>
+        </div>
+        
+        <button class="start-button" id="startNow" disabled>Start Now</button>
+        
+        <div class="waiting-message" id="waitingMessage">
+            Waiting for players to join...
+        </div>
+    </div>
+
+    <script>
+        // Get session data (this would come from your main page)
+        // For demonstration purposes, we'll simulate getting the player name from URL parameters or sessionStorage
+        
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        
+        // Get player name from URL parameter or sessionStorage
+        const playerName = getUrlParameter('playerName') || sessionStorage.getItem('playerName') || '';
+        const isHost = getUrlParameter('isHost') === 'true' || sessionStorage.getItem('isHost') === 'true';
+        
+        // For demonstration, let's simulate a waiting room
+        // In a real app, this would use WebSockets or a similar technology
+        
+        let player1Connected = false;
+        let player2Connected = false;
+        
+        // If current user is host (player 1)
+        if (isHost && playerName) {
+            document.getElementById('player1Box').innerHTML = playerName;
+            player1Connected = true;
+            
+            // Store this information
+            sessionStorage.setItem('player1', playerName);
+            
+            // In a real app, you would notify the server that player 1 is connected
+        } 
+        
+        // If current user is joining (player 2)
+        if (!isHost && playerName) {
+            // In a real app, you would check with the server if player 1 exists
+            const player1Name = sessionStorage.getItem('player1') || 'Player 1';
+            
+            document.getElementById('player1Box').innerHTML = player1Name;
+            player1Connected = true;
+            
+            document.getElementById('player2Box').innerHTML = playerName;
+            player2Connected = true;
+            
+            // Store this information
+            sessionStorage.setItem('player2', playerName);
+            
+            // In a real app, you would notify the server that player 2 is connected
+        }
+        
+        // For demonstration, let's simulate player 2 joining after a delay
+        if (isHost && playerName) {
+            // Simulate player 2 joining after 5 seconds (in a real app, this would be triggered by actual joining)
+            setTimeout(() => {
+                // This would normally come from the server in a real application
+                const simulatedPlayer2Name = "Player 2";
+                
+                document.getElementById('player2Box').innerHTML = simulatedPlayer2Name;
+                player2Connected = true;
+                
+                sessionStorage.setItem('player2', simulatedPlayer2Name);
+                
+                checkIfReadyToStart();
+                document.getElementById('waitingMessage').textContent = 'All players connected! You can start the game.';
+            }, 5000);
+        }
+        
+        // Function to check if we can enable the Start button
+        function checkIfReadyToStart() {
+            if (player1Connected && player2Connected) {
+                document.getElementById('startNow').disabled = false;
+            }
+        }
+        
+        // Check immediately in case both players are already connected
+        checkIfReadyToStart();
+        
+        // Add event listener to Start Now button
+        document.getElementById('startNow').addEventListener('click', function() {
+            const genre = document.getElementById('genre').value;
+            
+            // Validate genre input
+            if (!genre) {
+                alert('Please select a music genre before starting.');
+                return;
+            }
+            
+            // Get player names
+            const player1 = sessionStorage.getItem('player1') || 'Player 1';
+            const player2 = sessionStorage.getItem('player2') || 'Player 2';
+            
+            // Store battle data
+            const battleData = {
+                player1: player1,
+                player2: player2,
+                genre: genre
+            };
+            
+            // Store data in sessionStorage for use in the battle page
+            sessionStorage.setItem('battleData', JSON.stringify(battleData));
+            
+            // Redirect to battle page
+            window.location.href = 'battle.html';
+        });
+    </script>
+</body>
+</html>
