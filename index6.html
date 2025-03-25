@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Battle - Music Guessing Game</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fredoka One', cursive;
+            background-color: #3F4542;
+            color: white;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: #3F4542;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px; /* Keep fixed height for header */
+            position: relative;
+            overflow: visible; /* Allow logo to overflow header if needed */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            position: absolute; /* Keep absolute positioning */
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10; /* Ensure logo appears above other elements */
+        }
+
+        .logo img {
+            height: 200px; /* Increased logo size */
+            width: auto;
+            margin-top: 50px; /* Add space for the logo */
+            /* Logo can now extend outside the header without pushing content */
+        }
+
+        nav {
+            margin-left: auto; /* Push navigation to right side */
+            
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-family: 'Fredoka One', cursive;
+        }
+
+        /* Main Game Area */
+        .game-area {
+            position: relative;
+            background: linear-gradient(to bottom, #3F4542, #9CABA4);
+            padding: 60px 20px 180px;
+            text-align: center;
+            border-bottom-left-radius: 50% 20%;
+            border-bottom-right-radius: 50% 20%;
+            min-height: 100vh; /* Make sure it fills the viewport height */
+        }
+
+        /* New 3D Model Layout */
+        .model-container {
+            position: relative;
+            width: 100%;
+            height: 500px; /* Adjust based on your 3D model's height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px auto;
+        }
+
+        /* Placeholder for 3D model */
+        .model-placeholder {
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            /* Remove this comment when adding your 3D model */
+            /* This div will be replaced by your 3D headphone model */
+        }
+
+        /* Text elements around the 3D model */
+        .hear-control {
+            position: absolute;
+            left: 15%;
+            top: 25%;
+            font-family: 'Bungee', cursive;
+            font-size: 54px;
+            font-weight: 400;
+            text-transform: uppercase;
+            line-height: 1.2;
+            text-align: left;
+        }
+
+        .score-control {
+            position: absolute;
+            right: 15%;
+            top: 25%;
+            font-family: 'Bungee', cursive;
+            font-size: 54px;
+            font-weight: 400;
+            text-transform: uppercase;
+            line-height: 1.2;
+            text-align: right;
+        }
+
+        .guess-section {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Bungee', cursive;
+            font-size: 54px;
+            font-weight: 400;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        /* Login Section - Now as a separate section */
+        .login-section-container {
+            padding: 60px 20px;
+            text-align: center;
+            background-color: #3F4542;
+        }
+
+        .login-section {
+            background-color: rgba(63, 69, 66, 0.5);
+            max-width: 400px; /* Increased width to accommodate larger character */
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .name-input {
+            background-color: #75817B;
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            width: 100%;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Character Selection Carousel */
+        .character-selection {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .character-title {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .character-carousel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+            max-width: 320px; /* Increased to accommodate larger character */
+        }
+
+        .character-display {
+            width: 200px; /* Increased to 200px as requested */
+            height: 200px; /* Increased to 200px as requested */
+            position: relative;
+            margin: 0 auto;
+        }
+
+        /* Hide all characters initially */
+        .character-option {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        /* Show only the active character */
+        .character-option.active {
+            display: block;
+        }
+
+        .character-option img {
+            width: 200px; /* Increased to 200px as requested */
+            height: 200px; /* Increased to 200px as requested */
+            /* Removed border-radius and border to eliminate blue ellipse */
+        }
+
+        /* Navigation arrows */
+        .nav-arrow {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+            color: white;
+            background: none;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover {
+            color: #35EDFA;
+            transform: scale(1.2);
+        }
+
+        /* For debugging - remove in production */
+        .character-counter {
+            margin-top: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            background-color: #75817B;
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            width: 100%;
+            border-radius: 30px;
+            margin-bottom: 10px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #35EDFA;
+            color: #3F4542;
+        }
+
+        /* How To Play Section */
+        .how-to-play {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .section-title {
+            color: white;
+            font-family: 'Bungee', cursive;
+            font-size: 54px;
+            font-weight: 400;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-family: 'Fredoka One', cursive;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.4;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .step {
+            background-color: #75817B;
+            border-radius: 15px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+        }
+
+        .step-number {
+            background-color: #D9D9D9;
+            color: #3F4542;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+        }
+
+        .step-icon {
+            background-color: #D9D9D9;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px auto;
+            font-size: 24px;
+        }
+
+        .step-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .step-description {
+            font-family: 'Fredoka One', cursive;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* About The Game Section */
+        .about-game {
+            background-color: #3F4542;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-family: 'Fredoka One', cursive;
+            font-size: 18px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .model-container {
+                height: 400px;
+            }
+            
+            .model-placeholder {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .hear-control, .score-control {
+                font-size: 40px;
+                position: relative;
+                left: auto;
+                right: auto;
+                top: auto;
+            }
+            
+            .hear-control {
+                margin-bottom: 20px;
+            }
+            
+            .score-control {
+                margin-top: 20px;
+            }
+            
+            .guess-section {
+                font-size: 40px;
+                position: relative;
+                bottom: auto;
+                left: auto;
+                transform: none;
+                margin-top: 40px;
+            }
+            
+            .model-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .section-title {
+                font-size: 40px;
+            }
+
+            .steps-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .character-display, .character-option img {
+                width: 150px; /* Smaller on mobile but still large */
+                height: 150px;
+            }
+            
+            .login-section {
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Navigation -->
+        <header>
+            <div class="logo">
+                <img src="Beat.png" alt="Beat Battle Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#play">Play</a></li>
+                    <li><a href="#how-to-play">How To Play</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main Game Area (Landing Page) -->
+        <section id="home" class="game-area">
+            <div class="model-container">
+                <!-- Left text -->
+                <div class="hear-control">Hear</div>
+                
+                <!-- Center 3D model placeholder -->
+                <div class="model-placeholder">
+                    3D Headphone Model
+                    <!-- Your 3D model will replace this placeholder -->
+                </div>
+                
+                <!-- Right text -->
+                <div class="score-control">Score</div>
+                
+                <!-- Bottom text -->
+                <div class="guess-section">Guess</div>
+            </div>
+        </section>
+
+        <!-- Login Section with Character Selection -->
+        <section id="play" class="login-section-container">
+            <h2 class="section-title">Play Now</h2>
+            <div class="login-section">
+                <input type="text" class="name-input" placeholder="Enter name">
+                
+                <!-- Character Selection Area - Carousel Style -->
+                <div class="character-selection">
+                    <h3 class="character-title">Choose Your Character</h3>
+                    <div class="character-carousel">
+                        <!-- Left arrow navigation -->
+                        <button class="nav-arrow prev-character">&lt;</button>
+                        
+                        <!-- Character display area -->
+                        <div class="character-display">
+                            <!-- Character 1 -->
+                            <div class="character-option active" data-character="1">
+                                <img src="1.png" alt="Character 1">
+                            </div>
+                            
+                            <!-- Character 2 -->
+                            <div class="character-option" data-character="2">
+                                <img src="2.png" alt="Character 2">
+                            </div>
+                            
+                            <!-- Character 3 -->
+                            <div class="character-option" data-character="3">
+                                <img src="3.png" alt="Character 3">
+                            </div>
+                            
+                            <!-- Character 4 -->
+                            <div class="character-option" data-character="4">
+                                <img src="4.png" alt="Character 4">
+                            </div>
+                            
+                            <!-- Character 5 -->
+                            <div class="character-option" data-character="5">
+                                <img src="5.png" alt="Character 5">
+                            </div>
+                            
+                            <!-- Character 6 -->
+                            <div class="character-option" data-character="6">
+                                <img src="6.png" alt="Character 6">
+                            </div>
+                        </div>
+                        
+                        <!-- Right arrow navigation -->
+                        <button class="nav-arrow next-character">&gt;</button>
+                    </div>
+                </div>
+                
+                <button class="btn">Create Room</button>
+                <button class="btn">Join Room</button>
+            </div>
+        </section>
+
+        <!-- How To Play Section -->
+        <section id="how-to-play" class="how-to-play">
+            <h2 class="section-title">How To Play</h2>
+            <p class="section-subtitle">Master The Game In Just A Few Simple Steps And Start Testing Your Music Knowledge!</p>
+            
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 16.5V7.5L16 12L10 16.5Z" fill="#3F4542"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Listen To The Snippet</h3>
+                    <p class="step-description">A short clip of a song will play, listen carefully to identify the melody, lyrics, and artist.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="#3F4542"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Type Your Guess</h3>
+                    <p class="step-description">Enter the song name in the input field, our smart search helps with suggestions as you type.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="#3F4542"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Submit & Score</h3>
+                    <p class="step-description">Submit your answer and see if you got it right.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About The Game Section -->
+        <section id="about" class="about-game">
+            <h2 class="section-title">About The Game</h2>
+            <div class="about-content">
+                <p>Beat Battle is a 1v1 song guessing game! Choose your favorite genre, listen to a short snippet, and race to guess the song before your opponent, play and prove your music mastery!</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript for Character Selection Carousel -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all character options
+            const characterOptions = document.querySelectorAll('.character-option');
+            const prevButton = document.querySelector('.prev-character');
+            const nextButton = document.querySelector('.next-character');
+            let currentIndex = 0;
+            let selectedCharacter = 1; // Default to the first character
+            
+            // Function to show the current character and hide others
+            function showCurrentCharacter() {
+                characterOptions.forEach((option, index) => {
+                    if (index === currentIndex) {
+                        option.classList.add('active');
+                        // Update the selected character ID
+                        selectedCharacter = option.getAttribute('data-character');
+                    } else {
+                        option.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Previous button click handler
+            prevButton.addEventListener('click', function() {
+                currentIndex = (currentIndex - 1 + characterOptions.length) % characterOptions.length;
+                showCurrentCharacter();
+            });
+            
+            // Next button click handler
+            nextButton.addEventListener('click', function() {
+                currentIndex = (currentIndex + 1) % characterOptions.length;
+                showCurrentCharacter();
+            });
+            
+            // Event listener for the Create Room and Join Room buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const playerName = document.querySelector('.name-input').value.trim();
+                    
+                    if (!playerName) {
+                        alert('Please enter your name!');
+                        return;
+                    }
+                    
+                    // Here you would typically send the data to your game logic or server
+                    // For now, we'll just log it
+                    console.log('Player name: ' + playerName);
+                    console.log('Selected character: ' + selectedCharacter);
+                    console.log('Action: ' + this.textContent);
+                    
+                    // You could redirect to the game room here
+                    // window.location.href = 'game-room.html?name=' + encodeURIComponent(playerName) + '&character=' + selectedCharacter;
+                });
+            });
+            
+            // Initialize: show first character
+            showCurrentCharacter();
+        });
+    </script>
+</body>
+</html>
